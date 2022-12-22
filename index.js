@@ -15,7 +15,8 @@ async function run() {
 
    try {
 
-      const categoriesCollection = client.db('news-71').collection('categories')
+      const categoriesCollection = client.db('news-71').collection('categories');
+      const newsesCollection = client.db('news-71').collection('news');
 
 
       app.get('/', (req, res) => {
@@ -33,10 +34,12 @@ async function run() {
       //Sj
 
       //Mostafa write code here
-      
-      app.post('/news/:id', async (req, res) => {
-         const newsData = req.body;
-         const result = await newsesCollection.insertOne(newsData);
+
+      app.get('/news/:name', async (req, res) => {
+         
+         const name = req.params.name;
+         const result = await newsesCollection.find({ category_id: name }).toArray();
+         console.log(result);
          res.send(result);
       })
       //Inzamam write code here .
@@ -59,5 +62,5 @@ async function run() {
 run().catch(error => console.error(error));
 
 app.listen(port, () => {
-   console.log(`genius car server is running on ${port}`);
+   console.log(`News-71 server is running on ${port}`);
 })
