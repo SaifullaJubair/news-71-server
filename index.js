@@ -16,7 +16,6 @@ async function run() {
    try {
 
       const categoriesCollection = client.db('news-71').collection('categories')
-      const newsesCollection = client.db('news-71').collection('news')
 
 
       app.get('/', (req, res) => {
@@ -33,7 +32,7 @@ async function run() {
 
 
       //Mostafa write code here
-
+      
 
       //Inzamam write code here
 
