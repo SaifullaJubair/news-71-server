@@ -8,8 +8,6 @@ const port = process.env.PORT || 5000;
 app.use(cors())
 app.use(express.json())
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.dnl5op5.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -18,7 +16,6 @@ async function run() {
    try {
 
       const categoriesCollection = client.db('news-71').collection('categories')
-      const newsCollection = client.db('news-71').collection('news')
 
 
       app.get('/', (req, res) => {
@@ -36,16 +33,18 @@ async function run() {
 
       //Mostafa write code here
       
-      app.post('/news/:id', async (req, res) => {
-         const user = req.body;
-         // console.log(user);
-         const result = await newsCollection.insertOne(user);
-         res.send(result);
-     });
 
       //Inzamam write code here
 
+
       // Mehadi write code here
+      // add news 
+      app.post('/addnews', async (req, res) => {
+         const newsData = req.body;
+         const result = await newsesCollection.insertOne(newsData);
+         res.send(result);
+      })
+
 
 
 
