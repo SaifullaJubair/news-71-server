@@ -18,6 +18,7 @@ async function run() {
    try {
 
       const categoriesCollection = client.db('news-71').collection('categories')
+      const newsCollection = client.db('news-71').collection('news')
 
 
       app.get('/', (req, res) => {
@@ -35,6 +36,12 @@ async function run() {
 
       //Mostafa write code here
       
+      app.post('/news/:id', async (req, res) => {
+         const user = req.body;
+         // console.log(user);
+         const result = await newsCollection.insertOne(user);
+         res.send(result);
+     });
 
       //Inzamam write code here
 
