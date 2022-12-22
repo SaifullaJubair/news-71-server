@@ -34,7 +34,7 @@ async function run() {
 
       //Mostafa write code here
       
-      app.post('/addnews/:id', async (req, res) => {
+      app.post('/news/:id', async (req, res) => {
          const newsData = req.body;
          const result = await newsesCollection.insertOne(newsData);
          res.send(result);
