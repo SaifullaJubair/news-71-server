@@ -31,7 +31,11 @@ async function run() {
 
       //Saifullah write code here
 
-      //Sj
+      app.get('/latestnews', async (req, res) => {
+
+         const result = await (newsesCollection.find({}).limit(6)).toArray();
+         res.send(result);
+      })
 
       //Mostafa write code here
 
