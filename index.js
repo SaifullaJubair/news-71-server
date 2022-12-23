@@ -35,10 +35,12 @@ async function run() {
 
       //Mostafa write code here
 
+      //  get category wised data
       app.get('/news/:name', async (req, res) => {
-         
+         const length = parseInt(req.query.length);
+         console.log(length);
          const name = req.params.name;
-         const result = await newsesCollection.find({ category_id: name }).toArray();
+         const result = await (newsesCollection.find({ category_id: name }).limit(length)).toArray();
          console.log(result);
          res.send(result);
       })
@@ -52,10 +54,6 @@ async function run() {
          const result = await newsesCollection.insertOne(newsData);
          res.send(result);
       })
-
-
-
-
    }
    finally { }
 }
