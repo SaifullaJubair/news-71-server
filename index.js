@@ -52,6 +52,13 @@ async function run() {
 
       //Mostafa write code here
 
+      app.post('/adduser', async (req, res) => {
+         const user = req.body;
+         // console.log(user);
+         const result = await usersCollection.insertOne(user);
+         res.send(result);
+     });
+
       //  get category wised data
       app.get('/news/:name', async (req, res) => {
          const length = parseInt(req.query.length);
