@@ -17,6 +17,7 @@ async function run() {
 
       const categoriesCollection = client.db('news-71').collection('categories');
       const newsesCollection = client.db('news-71').collection('news');
+      const usersCollection = client.db('news-71').collection('users');
 
 
       app.get('/', (req, res) => {
@@ -35,6 +36,18 @@ async function run() {
 
          const result = await (newsesCollection.find({}).limit(6)).toArray();
          res.send(result);
+      })
+      app.get('/users', async (req, res) => {
+         const query = {}
+         const users = await usersCollection.find(query).toArray()
+         res.send(users)
+      })
+
+      app.delete('/users/:id', async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: ObjectId(id) }
+         const result = await usersCollection.deleteOne(filter)
+         res.send(result)
       })
 
       //Mostafa write code here
