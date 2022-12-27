@@ -25,8 +25,8 @@ async function run() {
       })
 
       app.get('/allcategories', async (req, res) => {
-         const query = {}
-         const result = await categoriesCollection.find(query).toArray()
+        
+         const result = await categoriesCollection.find({}).toArray()
          res.send(result)
       })
 
@@ -98,6 +98,26 @@ async function run() {
          const result = await newsesCollection.insertOne(newsData);
          res.send(result);
       })
+      
+      app.get('/allnews/:categoryName', async (req, res) => {
+         const name = req.params.categoryName;
+         if (name === 'All') {
+            const result = await newsesCollection.find({}).toArray();
+            res.send(result);
+         }
+         else {
+            const result = await newsesCollection.find({ category_id: name }).toArray()
+            res.send(result);
+         }
+       
+      })
+
+      app.delete('/news/:id', async (req, res) => {
+         const id = req.params.id;
+         const result = await newsesCollection.deleteOne({ _id: ObjectId(id) });
+         res.send(result)
+      })
+
    }
    finally { }
 }
