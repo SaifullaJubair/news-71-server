@@ -77,15 +77,15 @@ async function run() {
          // console.log(user);
          const result = await usersCollection.insertOne(user);
          res.send(result);
-     });
+      });
 
       //  get category wised data
       app.get('/news/:name', async (req, res) => {
          const length = parseInt(req.query.length);
-         console.log(length);
+         // console.log(length);
          const name = req.params.name;
          const result = await (newsesCollection.find({ category_id: name }).limit(length)).toArray();
-         console.log(result);
+         // console.log(result);
          res.send(result);
       })
       //Inzamam write code here .
