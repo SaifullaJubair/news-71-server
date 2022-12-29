@@ -26,8 +26,7 @@ async function run() {
       })
 
       app.get('/allcategories', async (req, res) => {
-         const query = {}
-         const result = await categoriesCollection.find(query).toArray()
+         const result = await categoriesCollection.find({}).toArray()
          res.send(result)
       })
 
@@ -133,7 +132,7 @@ async function run() {
       //  get category wised data
       app.get('/news/:name', async (req, res) => {
          const length = parseInt(req.query.length);
-         console.log(length);
+         // console.log(length);
          const name = req.params.name;
          const result = await (newsesCollection.find({ category_id: name }).limit(length)).sort({ createdAt: -1 }).toArray();
          console.log(result);
@@ -156,6 +155,66 @@ async function run() {
          const result = await newsesCollection.insertOne(newsData);
          res.send(result);
       })
+      app.post('/addcategory', async (req, res) => {
+         const name = req.body.name
+         const data = {
+            name:name
+         }
+         const result = await categoriesCollection.insertOne(data);
+         res.send(result);
+
+      })
+
+      app.get('/allnews/:categoryName', async (req, res) => {
+         const name = req.params.categoryName;
+         if (name === 'All') {
+            const result = await newsesCollection.find({}).toArray();
+            res.send(result);
+         }
+         else {
+            const result = await newsesCollection.find({ category_id: name }).toArray()
+            res.send(result);
+         }
+
+      })
+
+      app.get('/getnews', async (req, res) => {
+
+         const id = req.query.id;
+         console.log('id', id)
+         const result = await newsesCollection.findOne({ _id: ObjectId(id) });
+         res.send(result)
+      })
+
+      app.put('/editnews/:id', async (req, res) => {
+         const id = req.params.id;
+         const data = req.body;
+         const filter = { _id: ObjectId(id) }
+         const option = { upsert: true }
+         const updatedDoc = {
+            $set: {
+               heading: data?.heading,
+               details: data?.details,
+               location: data?.location,
+               img: data?.img,
+               category_id: data?.category_id,
+            }
+         }
+         const result = await newsesCollection.updateOne(filter, updatedDoc, option);
+         res.send(result)
+      })
+
+      app.delete('/news/:id', async (req, res) => {
+         const id = req.params.id;
+         const result = await newsesCollection.deleteOne({ _id: ObjectId(id) });
+         res.send(result)
+      })
+      app.delete('/deletecategory', async (req, res) => {
+         const id = req.body._id;
+         const result = await categoriesCollection.deleteOne({ _id: ObjectId(id) });
+         res.send(result)
+      })
+
    }
    finally { }
 }
