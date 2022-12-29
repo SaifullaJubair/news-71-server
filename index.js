@@ -100,7 +100,7 @@ async function run() {
       app.post('/addcategory', async (req, res) => {
          const name = req.body.name
          const data = {
-            name:name
+            name: name
          }
          const result = await categoriesCollection.insertOne(data);
          res.send(result);
