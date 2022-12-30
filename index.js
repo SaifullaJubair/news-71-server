@@ -182,8 +182,16 @@ async function run() {
       //  get category wised data
       app.get('/news/:name', async (req, res) => {
          const length = parseInt(req.query.length);
-         // console.log(length);
          const name = req.params.name;
+         if (length == -1) {
+            const result = await (newsesCollection.find({ category_id: name })).toArray();
+            res.send(result);
+         }
+         else {
+            const result = await (newsesCollection.find({ category_id: name }).limit(length)).toArray();
+            res.send(result);
+         }
+
          const result = await (newsesCollection.find({ category_id: name }).limit(length)).sort({ createdAt: -1 }).toArray();
          console.log(result);
          res.send(result);
@@ -263,6 +271,34 @@ async function run() {
          const id = req.body._id;
          const result = await categoriesCollection.deleteOne({ _id: ObjectId(id) });
          res.send(result)
+      })
+
+      app.put('/editcategory', async (req, res) => {
+         const id = req.body._id;
+         const name = req.body.name;
+         const filter = { _id: ObjectId(id) }
+         const option = { upsert: true }
+         const updatedDoc = {
+            $set: {
+               name: name
+            }
+         }
+         const result = await categoriesCollection.updateOne(filter, updatedDoc, option);
+         res.send(result)
+      })
+      app.get('/news/search/:name', async (req, res) => {
+         let name = req.params.name;
+         let mainName = name;
+         let uppercaseName = name.toUpperCase();
+         name = name?.charAt(0)?.toUpperCase() + name?.slice(1);
+         const categoryNews = await (newsesCollection.find({ category_id: name })).toArray();
+         const headingNews = await (newsesCollection.find({ heading: { $regex: `.*${name}.*` } })).toArray();
+         const headingNews2 = await (newsesCollection.find({ heading: { $regex: `.*${mainName}.*` } })).toArray();
+         const headingNews3 = await (newsesCollection.find({ heading: { $regex: `.*${uppercaseName}.*` } })).toArray();
+         const result = [...categoryNews, ...headingNews, ...headingNews2,...headingNews3]
+         console.log(result);
+         res.send(result)
+
       })
 
    }
