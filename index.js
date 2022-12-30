@@ -18,6 +18,7 @@ async function run() {
       const categoriesCollection = client.db('news-71').collection('categories');
       const newsesCollection = client.db('news-71').collection('news');
       const usersCollection = client.db('news-71').collection('users');
+      const commentCollection = client.db('news-71').collection('comment');
 
 
       app.get('/', (req, res) => {
@@ -69,7 +70,11 @@ async function run() {
          res.send(result)
       })
 
-      //Mostafa write code here
+      //************Mostafa write code here ********************************
+      //************Mostafa write code here ********************************
+      //************Mostafa write code here ********************************
+      //************Mostafa write code here ********************************
+      //************Mostafa write code here ********************************
 
       app.post('/adduser', async (req, res) => {
          const user = req.body;
@@ -77,6 +82,52 @@ async function run() {
          const result = await usersCollection.insertOne(user);
          res.send(result);
       });
+
+
+      app.get('/news', async (req, res) => {
+         const query = {}
+         const users = await newsesCollection.find(query).toArray()
+         res.send(users)
+      })
+
+      app.get('/singlenews/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { _id: ObjectId(id) };
+         const news = await newsesCollection.findOne(query);
+         res.send(news);
+      })
+      app.get('/newsCategory/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { category_id: id };
+         const cursor = newsesCollection.find(query).limit(4);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
+      app.post('/addcomment', async (req, res) => {
+         const comment = req.body;
+         // console.log(comment);
+         const result = await commentCollection.insertOne(comment);
+         res.send(result);
+      });
+
+      app.get('/comment/:id', async (req, res) => {
+         const id = req.params.id;
+     
+         const query = { newsId: id };
+         const cursor = commentCollection.find(query).limit(10);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
+
+
+
+
+
+
+
+
+
+
 
       //  get category wised data
       app.get('/news/:name', async (req, res) => {
@@ -91,7 +142,17 @@ async function run() {
             res.send(result);
          }
 
+         const result = await (newsesCollection.find({ category_id: name }).limit(length)).sort({ createdAt: -1 }).toArray();
+         console.log(result);
+         res.send(result);
       })
+
+
+
+
+
+
+
       //Inzamam write code here .
 
 
