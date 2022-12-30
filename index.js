@@ -113,6 +113,7 @@ async function run() {
          res.send(result)
       })
 
+
       app.put('/users/update/:id', async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
@@ -238,8 +239,51 @@ async function run() {
          const news = await cursor.sort({ createdAt: -1 }).toArray();
          res.send(news)
       })
+      app.get('/comments/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { email: id };
+         const cursor = commentCollection.find(query);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
 
+      // app.put('/commentupdate/:id',  async (req, res) => {
+      //    const id = req.params.id;
+      //    const filter = { _id: ObjectId(id) }
+      //    const option = { upsert: true }
+      //    const updatedDoc = {
+      //       $set: {
+      //          comment: 'admin'
+      //       }
+      //    }
+      //    const result = await usersCollection.updateOne(filter, updatedDoc, option);
+      //    res.send(result)
+      // })
 
+      app.put('/commentupdate/:id', async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: ObjectId(id) };
+         const user = req.body;
+         const option = { upsert: true }
+         console.log(user)
+         console.log(id)
+         const updatedUser = {
+            $set: {
+               comment: user?.commentUpdate
+            }
+         }
+         const result = await commentCollection.updateOne(filter, updatedUser, option);
+         console.log(result)
+         res.send(result);
+         // console.log(updatedUser)
+      })
+
+      app.delete('/comment/:id', async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: ObjectId(id) }
+         const result = await commentCollection.deleteOne(filter)
+         res.send(result)
+      })
 
 
 
