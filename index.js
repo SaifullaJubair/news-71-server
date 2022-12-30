@@ -188,13 +188,13 @@ async function run() {
             res.send(result);
          }
          else {
-            const result = await (newsesCollection.find({ category_id: name }).limit(length)).toArray();
+            // const result = await (newsesCollection.find({ category_id: name }).limit(length)).toArray();
+            const result = await (newsesCollection.find({ category_id: name }).limit(length)).sort({ createdAt: -1 }).toArray();
+            console.log(result);
             res.send(result);
          }
 
-         const result = await (newsesCollection.find({ category_id: name }).limit(length)).sort({ createdAt: -1 }).toArray();
-         console.log(result);
-         res.send(result);
+
       })
 
 
@@ -295,7 +295,7 @@ async function run() {
          const headingNews = await (newsesCollection.find({ heading: { $regex: `.*${name}.*` } })).toArray();
          const headingNews2 = await (newsesCollection.find({ heading: { $regex: `.*${mainName}.*` } })).toArray();
          const headingNews3 = await (newsesCollection.find({ heading: { $regex: `.*${uppercaseName}.*` } })).toArray();
-         const result = [...categoryNews, ...headingNews, ...headingNews2,...headingNews3]
+         const result = [...categoryNews, ...headingNews, ...headingNews2, ...headingNews3]
          console.log(result);
          res.send(result)
 
