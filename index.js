@@ -87,20 +87,20 @@ async function run() {
          const result = await (newsesCollection.find({}).limit(6)).toArray();
          res.send(result);
       })
-      app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
+      app.get('/users',   async (req, res) => {
          const query = {}
          const users = await usersCollection.find(query).toArray()
          res.send(users)
       })
 
-      app.get('/users/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      app.get('/users/:id',   async (req, res) => {
          const id = req.params.id
          const query = { _id: ObjectId(id) }
          const user = await usersCollection.findOne(query)
          res.send(user)
       })
 
-      app.put('/users/update/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      app.put('/users/update/:id',  async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
          const option = { upsert: true }
@@ -113,7 +113,7 @@ async function run() {
          res.send(result)
       })
 
-      app.delete('/users/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      app.delete('/users/:id',  async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
          const result = await usersCollection.deleteOne(filter)
@@ -160,7 +160,7 @@ async function run() {
          res.send(result);
       });
 
-      app.get('/comment/:id', verifyJWT, async (req, res) => {
+      app.get('/comment/:id',  async (req, res) => {
          const id = req.params.id;
 
          const query = { newsId: id };
@@ -168,8 +168,51 @@ async function run() {
          const news = await cursor.sort({ createdAt: -1 }).toArray();
          res.send(news)
       })
+      app.get('/comments/:id',  async (req, res) => {
+         const id = req.params.id;
+         const query = { email: id };
+         const cursor = commentCollection.find(query);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
 
+      // app.put('/commentupdate/:id',  async (req, res) => {
+      //    const id = req.params.id;
+      //    const filter = { _id: ObjectId(id) }
+      //    const option = { upsert: true }
+      //    const updatedDoc = {
+      //       $set: {
+      //          comment: 'admin'
+      //       }
+      //    }
+      //    const result = await usersCollection.updateOne(filter, updatedDoc, option);
+      //    res.send(result)
+      // })
 
+      app.put('/commentupdate/:id', async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: ObjectId(id) };
+         const user = req.body;
+         const option = { upsert: true }
+         console.log(user)
+         console.log(id)
+         const updatedUser = {
+             $set: {
+                 comment: user?.commentUpdate
+             }
+         }
+         const result = await commentCollection.updateOne(filter, updatedUser, option);
+         console.log(result)
+         res.send(result);
+         // console.log(updatedUser)
+     })
+
+      app.delete('/comment/:id',  async (req, res) => {
+         const id = req.params.id;
+         const filter = { _id: ObjectId(id) }
+         const result = await commentCollection.deleteOne(filter)
+         res.send(result)
+      })
 
 
 
@@ -244,7 +287,7 @@ async function run() {
          res.send(result)
       })
 
-      app.put('/editnews/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      app.put('/editnews/:id', async (req, res) => {
          const id = req.params.id;
          const data = req.body;
          const filter = { _id: ObjectId(id) }
@@ -262,12 +305,12 @@ async function run() {
          res.send(result)
       })
 
-      app.delete('/news/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      app.delete('/news/:id',  async (req, res) => {
          const id = req.params.id;
          const result = await newsesCollection.deleteOne({ _id: ObjectId(id) });
          res.send(result)
       })
-      app.delete('/deletecategory', verifyJWT, verifyAdmin, async (req, res) => {
+      app.delete('/deletecategory',   async (req, res) => {
          const id = req.body._id;
          const result = await categoriesCollection.deleteOne({ _id: ObjectId(id) });
          res.send(result)
