@@ -187,6 +187,26 @@ async function run() {
          }
       })
 
+      // app.get('/liked/:email', async (req, res) => {
+      //    const email = req.params.email;
+      //    const query = { email: email };
+      //    const result = await likeCollection.find(query).toArray();
+      //    let array = []
+      //    const allNews = result.map(async (item) => {
+      //       const newsQuery = {
+      //          _id: ObjectId(item.id)
+      //       }
+      //       const newes = await newsesCollection.findOne(newsQuery)
+      //       const news = newes
+      //       console.log(news);
+      //       array.push(news)
+
+      //    })
+      //    console.log(array)
+
+      //    res.send(array)
+      // })
+
       //Saifulla's code end here
       //-----------------x-----------------//
 
