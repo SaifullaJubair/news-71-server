@@ -94,7 +94,7 @@ async function run() {
       })
       app.get('/users', async (req, res) => {
          const query = {}
-         const users = await usersCollection.find(query).toArray()
+         const users = await usersCollection.find(query).sort({ createdAt: -1 }).toArray()
          res.send(users)
       })
 
@@ -140,7 +140,13 @@ async function run() {
          const email = req.body.email
          const insertData = {
             id: newsData._id,
-            email: email
+            email: email,
+            heading: newsData.heading,
+            createdAt: newsData.createdAt,
+            newsImg: newsData.img,
+            category_id: newsData.category_id,
+
+
          }
          const query = { email: email, id: newsData._id }
          const result = await likeCollection.findOne(query)
@@ -166,7 +172,13 @@ async function run() {
          const email = req.body.email
          const insertData = {
             id: newsData._id,
-            email: email
+            email: email,
+            heading: newsData.heading,
+            createdAt: newsData.createdAt,
+            newsImg: newsData.img,
+            category_id: newsData.category_id,
+
+
          }
          const query = { email: email, id: newsData._id }
          const result = await disLikeCollection.findOne(query)
@@ -187,25 +199,15 @@ async function run() {
          }
       })
 
-      // app.get('/liked/:email', async (req, res) => {
-      //    const email = req.params.email;
-      //    const query = { email: email };
-      //    const result = await likeCollection.find(query).toArray();
-      //    let array = []
-      //    const allNews = result.map(async (item) => {
-      //       const newsQuery = {
-      //          _id: ObjectId(item.id)
-      //       }
-      //       const newes = await newsesCollection.findOne(newsQuery)
-      //       const news = newes
-      //       console.log(news);
-      //       array.push(news)
+      app.get('/like/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { email: id };
+         const cursor = likeCollection.find(query);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
 
-      //    })
-      //    console.log(array)
-
-      //    res.send(array)
-      // })
+      
 
       //Saifulla's code end here
       //-----------------x-----------------//
@@ -305,9 +307,17 @@ async function run() {
          res.send(result)
       })
 
+      app.get('/dislike/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { email: id };
+         const cursor = disLikeCollection.find(query);
+         const news = await cursor.sort({ createdAt: -1 }).toArray();
+         res.send(news)
+      })
 
 
 
+// end Mostafa's code
 
 
 
