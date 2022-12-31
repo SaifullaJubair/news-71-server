@@ -43,6 +43,8 @@ async function run() {
       const newsesCollection = client.db('news-71').collection('news');
       const usersCollection = client.db('news-71').collection('users');
       const commentCollection = client.db('news-71').collection('comment');
+      const likeCollection = client.db('news-71').collection('like');
+      const disLikeCollection = client.db('news-71').collection('disLike');
 
 
       app.get('/', (req, res) => {
@@ -54,7 +56,10 @@ async function run() {
          res.send(result)
       })
 
-      //Saifullah write code here
+      //---------x-----------
+
+      //Saifulla's code start here
+
 
       const verifyAdmin = async (req, res, next) => {
          // console.log("inside verifyAdmin", req.decoded.email);
@@ -87,20 +92,29 @@ async function run() {
          const result = await (newsesCollection.find({}).limit(6)).toArray();
          res.send(result);
       })
-      app.get('/users',   async (req, res) => {
+      app.get('/users', async (req, res) => {
          const query = {}
          const users = await usersCollection.find(query).toArray()
          res.send(users)
       })
 
-      app.get('/users/:id',   async (req, res) => {
+      app.get('/users/:id', async (req, res) => {
          const id = req.params.id
          const query = { _id: ObjectId(id) }
          const user = await usersCollection.findOne(query)
          res.send(user)
       })
+      app.get('/singleuser/:e', async (req, res) => {
 
-      app.put('/users/update/:id',  async (req, res) => {
+         const e = req.params.e
+         const query = { email: e }
+         const result = await usersCollection.findOne(query)
+
+         res.send(result)
+      })
+
+
+      app.put('/users/update/:id', async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
          const option = { upsert: true }
@@ -113,12 +127,89 @@ async function run() {
          res.send(result)
       })
 
-      app.delete('/users/:id',  async (req, res) => {
+      app.delete('/users/:id', async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
          const result = await usersCollection.deleteOne(filter)
          res.send(result)
       })
+
+      app.put('/increaselike', async (req, res) => {
+         console.log(req.body);
+         const newsData = req.body.newsData
+         const email = req.body.email
+         const insertData = {
+            id: newsData._id,
+            email: email
+         }
+         const query = { email: email, id: newsData._id }
+         const result = await likeCollection.findOne(query)
+         if (!result) {
+            const addLike = await likeCollection.insertOne(insertData)
+            const filter = { _id: ObjectId(newsData._id) }
+            const option = { upsert: true }
+            const updatedDoc = {
+               $set: {
+                  total_likes: (newsData.total_likes + 1)
+               }
+            }
+            const updateNews = await newsesCollection.updateOne(filter, updatedDoc, option);
+            res.send(updateNews)
+         }
+         else {
+            res.send({ 'modifiedCount': 0 })
+         }
+      })
+      app.put('/decreaselike', async (req, res) => {
+         console.log(req.body);
+         const newsData = req.body.newsData
+         const email = req.body.email
+         const insertData = {
+            id: newsData._id,
+            email: email
+         }
+         const query = { email: email, id: newsData._id }
+         const result = await disLikeCollection.findOne(query)
+         if (!result) {
+            const addDislike = await disLikeCollection.insertOne(insertData)
+            const filter = { _id: ObjectId(newsData._id) }
+            const option = { upsert: true }
+            const updatedDoc = {
+               $set: {
+                  total_dislikes: (newsData.total_dislikes + 1)
+               }
+            }
+            const updateNews = await newsesCollection.updateOne(filter, updatedDoc, option);
+            res.send(updateNews)
+         }
+         else {
+            res.send({ 'modifiedCount': 0 })
+         }
+      })
+
+      // app.get('/liked/:email', async (req, res) => {
+      //    const email = req.params.email;
+      //    const query = { email: email };
+      //    const result = await likeCollection.find(query).toArray();
+      //    let array = []
+      //    const allNews = result.map(async (item) => {
+      //       const newsQuery = {
+      //          _id: ObjectId(item.id)
+      //       }
+      //       const newes = await newsesCollection.findOne(newsQuery)
+      //       const news = newes
+      //       console.log(news);
+      //       array.push(news)
+
+      //    })
+      //    console.log(array)
+
+      //    res.send(array)
+      // })
+
+      //Saifulla's code end here
+      //-----------------x-----------------//
+
 
       //************Mostafa write code here ********************************
       //************Mostafa write code here ********************************
@@ -160,7 +251,7 @@ async function run() {
          res.send(result);
       });
 
-      app.get('/comment/:id',  async (req, res) => {
+      app.get('/comment/:id', async (req, res) => {
          const id = req.params.id;
 
          const query = { newsId: id };
@@ -168,7 +259,7 @@ async function run() {
          const news = await cursor.sort({ createdAt: -1 }).toArray();
          res.send(news)
       })
-      app.get('/comments/:id',  async (req, res) => {
+      app.get('/comments/:id', async (req, res) => {
          const id = req.params.id;
          const query = { email: id };
          const cursor = commentCollection.find(query);
@@ -197,17 +288,17 @@ async function run() {
          console.log(user)
          console.log(id)
          const updatedUser = {
-             $set: {
-                 comment: user?.commentUpdate
-             }
+            $set: {
+               comment: user?.commentUpdate
+            }
          }
          const result = await commentCollection.updateOne(filter, updatedUser, option);
          console.log(result)
          res.send(result);
          // console.log(updatedUser)
-     })
+      })
 
-      app.delete('/comment/:id',  async (req, res) => {
+      app.delete('/comment/:id', async (req, res) => {
          const id = req.params.id;
          const filter = { _id: ObjectId(id) }
          const result = await commentCollection.deleteOne(filter)
@@ -305,12 +396,12 @@ async function run() {
          res.send(result)
       })
 
-      app.delete('/news/:id',  async (req, res) => {
+      app.delete('/news/:id', async (req, res) => {
          const id = req.params.id;
          const result = await newsesCollection.deleteOne({ _id: ObjectId(id) });
          res.send(result)
       })
-      app.delete('/deletecategory',   async (req, res) => {
+      app.delete('/deletecategory', async (req, res) => {
          const id = req.body._id;
          const result = await categoriesCollection.deleteOne({ _id: ObjectId(id) });
          res.send(result)
